@@ -45,19 +45,19 @@ import {ref} from 'vue'
 const data = ref([
   {
     id: 1,
-    image: "/public/images/car1.svg"
+    image: "./public/images/car1.svg"
   },
   {
     id: 2,
-    image: "/public/images/car2.svg"
+    image: "./public/images/car2.svg"
   },
   {
     id: 3,
-    image: "/public/images/car3.svg"
+    image: "./public/images/car3.svg"
   },
   {
     id: 4,
-    image: "/public/images/car4.svg"
+    image: "./public/images/car4.svg"
   },
   {
     id: 5,
