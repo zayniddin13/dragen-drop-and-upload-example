@@ -53,11 +53,11 @@ const data = ref([
   },
   {
     id: 3,
-    image: "./public/images/car3.svg"
+    image: "../public/images/car3.svg"
   },
   {
     id: 4,
-    image: "./public/images/car4.svg"
+    image: "/images/car4.svg"
   },
   {
     id: 5,
