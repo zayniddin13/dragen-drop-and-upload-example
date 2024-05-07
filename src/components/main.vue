@@ -11,18 +11,10 @@
               @dragstart="handleDragStart(index)"
               @dragover.prevent="handleDragOver"
               @drop="handleDrop(index)"
-              class="h-full max-h-[260px] relative">
-            <div
-                v-if="!item.image"
-                class="max-h-[360px] text-center bg-stone-1 rounded-lg p-6 max-sm:p-1 border-dashed border-grey-2 border flex justify-center items-center flex-col h-full">
-              <img src="../../public/images/uploadImg.svg" alt="uploadImg">
-              <h3 class="font-semibold text-base max-sm:text-xs leading-5 mt-5 mb-2">Перетащите изображение сюда</h3>
-              <p class="font-medium text-sm max-sm:text-xs  leading-4 text-grey-1">Перетащите свое изображение сюда или
-                <span
-                    class="text-mainBlue cursor-pointer" @click="selectfiles(index)">выберите</span></p>
-              <input name="file" class="file hidden" type="file" ref="input" @change="onFileSelect"/>
-            </div>
-            <div v-else class="h-full">
+              class="max-h-[260px] relative rounded-lg h-full w-full">
+
+
+            <div class="rounded-lg h-full w-full">
               <div class="absolute top-3 right-3 flex gap-2">
                 <div
                     class="rounded-full p-2 bg-blur/30 z-10 border border-white/9  transition-all duration-300 cursor-pointer">
@@ -33,6 +25,20 @@
               </div>
               <img :src="item.image" alt="image" class="rounded-lg h-full w-full"></div>
           </div>
+        </div>
+        <div
+            v-if="!item?.image"
+            @click="selectfiles(index)"
+            @dragover.prevent="onDragOver"
+            @dragleave.prevent="onDragLeave"
+            @drop.prevent="onDrop($event, index)"
+            class="max-h-[360px] text-center bg-stone-1 rounded-lg p-6 max-sm:p-1 border-dashed border-grey-2 border flex justify-center items-center flex-col h-full">
+          <img src="../../public/images/uploadImg.svg" alt="uploadImg">
+          <h3 class="font-semibold text-base max-sm:text-xs leading-5 mt-5 mb-2">Перетащите изображение сюда</h3>
+          <p class="font-medium text-sm max-sm:text-xs  leading-4 text-grey-1">Перетащите свое изображение сюда или
+            <span
+                class="text-mainBlue cursor-pointer">выберите</span></p>
+          <input name="file" class="file hidden" type="file" ref="input" @change="onFileSelect"/>
         </div>
       </div>
 
@@ -59,19 +65,16 @@ const data = ref([
     id: 4,
     image: "/images/car4.webp"
   },
-  {
-    id: 5,
-    image: ""
-  },
-  {
-    id: 6,
-    image: ""
-  }
+
 ])
 
 
 let newDrag;
 let remDrag;
+const isDragging = ref(false);
+const input = ref(null)
+const dataId = ref(null)
+let url = ref(null)
 
 function rmHandleDragStart(i) {
   remDrag = i;
@@ -79,6 +82,8 @@ function rmHandleDragStart(i) {
 
 function handleDragStart(i) {
   newDrag = i;
+
+
 }
 
 const handleDragOver = (event) => {
@@ -89,43 +94,69 @@ function handleDrop(i) {
   let item = data.value[i];
   data.value[i] = data.value[newDrag];
   data.value[newDrag] = item;
+
 }
 
 function rmHandleDrop(i) {
-  console.log("item dropped");
   let remItem = removedList.value[i];
   removedList.value[i] = removedList.value[remDrag];
   removedList.value[remDrag] = remItem;
 }
 
-const input = ref(null)
-const dataId = ref(null)
+function onDragOver(event) {
+  event.preventDefault()
+  isDragging.value = true
+  event.dataTransfer.dropEffect = "copy"
+
+}
+
+function onDragLeave(e) {
+  e.preventDefault()
+  isDragging.value = false
+}
+
+function onDrop(e, index) {
+  dataId.value = index
+  isDragging.value = false
+  const files = e.dataTransfer.files
+  if (files[0].type.split('/')[0] = "image") {
+    data.value.push({})
+    url.value = URL.createObjectURL(files[0])
+    data.value[data.value.length - 1].image = url.value
+    data.value[data.value.length - 1].id = data.value.length
+
+
+
+  }
+}
+
 
 function selectfiles(i) {
   dataId.value = i
   input.value[0].click()
 }
 
-let url = ref(null)
 
 function onFileSelect(event) {
   const files = event.target.files
-  url.value = URL.createObjectURL(files[0])
-  data.value[dataId.value].image = url.value
-  let full = data.value.every(item => item.image)
-  console.log(full)
-  if (full) {
-    data.value.push({})
-    data.value[data.value.length - 1].id = data.value[data.value.length]
-    data.value[data.value.length - 1].image = ""
+  if (files[0].type.split('/')[0] == 'image') {
+    url.value = URL.createObjectURL(files[0])
+    data.value[dataId.value].image = url.value
+    let full = data.value.every(item => item.image)
+    console.log(data.value[dataId.value])
+    if (full) {
+      data.value.push({})
+      data.value[data.value.length - 1].id = data.value[data.value.length]
+      data.value[data.value.length - 1].image = ""
+    }
   }
 }
 
 function moveTrash(id) {
-  data.value=data.value.filter(item => item!== data.value[id])
-  data.value.forEach((item, index)=>{
-    if (!item.image){
-      data.value=data.value.filter(el => el!== data.value[index])
+  data.value = data.value.filter(item => item !== data.value[id])
+  data.value.forEach((item, index) => {
+    if (!item.image) {
+      data.value = data.value.filter(el => el !== data.value[index])
     }
   })
   data.value.push({})
@@ -133,10 +164,11 @@ function moveTrash(id) {
   data.value[data.value.length - 1].image = ""
 
 }
-onMounted(()=>{
-  data.value.forEach((item, index)=>{
-    if (!item.image){
-      data.value=data.value.filter(el => el!== data.value[index])
+
+onMounted(() => {
+  data.value.forEach((item, index) => {
+    if (!item.image) {
+      data.value = data.value.filter(el => el !== data.value[index])
     }
   })
 
