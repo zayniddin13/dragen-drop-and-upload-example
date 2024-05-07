@@ -126,6 +126,14 @@ function moveTrash(id) {
   data.value.push({})
   data.value[data.value.length - 1].id = data.value[data.value.length]
   data.value[data.value.length - 1].image = ""
+  data.value.forEach((item, index)=>{
+    if (!item.image){
+      data.value=data.value.filter(el => el!== data.value[index])
+      data.value.push({})
+      data.value[data.value.length - 1].id = data.value[data.value.length]
+      data.value[data.value.length - 1].image = ""
+    }
+  })
 }
 
 </script>
