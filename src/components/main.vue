@@ -45,19 +45,19 @@ import {ref, onMounted} from 'vue'
 const data = ref([
   {
     id: 1,
-    image: "/images/car1.svg"
+    image: "/images/car1.webp"
   },
   {
     id: 2,
-    image: "/images/car2.svg"
+    image: "/images/car2.webp"
   },
   {
     id: 3,
-    image: "/images/car3.svg"
+    image: "/images/car3.webp"
   },
   {
     id: 4,
-    image: "/images/car4.svg"
+    image: "/images/car4.webp"
   },
   {
     id: 5,
